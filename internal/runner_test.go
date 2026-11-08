@@ -17,11 +17,25 @@ package bazel_test
 
 import (
 	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/bazelbuild/rules_go/go/tools/bazel_testing"
 )
+
+func TestQueryWithoutGoEnv(t *testing.T) {
+	// Loading the package that declares the Gazelle runner must work even
+	// when an unrelated target cannot fetch the configured Go environment.
+	repo := t.TempDir()
+	if err := os.WriteFile(filepath.Join(repo, "WORKSPACE"), nil, 0o666); err != nil {
+		t.Fatal(err)
+	}
+	if err := bazel_testing.RunBazel("query", "--enable_workspace",
+		"--override_repository=bazel_gazelle_go_repository_config="+repo, "//:gazelle"); err != nil {
+		t.Fatal(err)
+	}
+}
 
 func TestRunner(t *testing.T) {
 	origBuildData, err := os.ReadFile("BUILD.bazel")
