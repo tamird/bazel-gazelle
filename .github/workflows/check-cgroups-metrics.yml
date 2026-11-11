@@ -1,0 +1,18 @@
+name: Test the cgroups v3 Gazelle default
+on:
+  push:
+    branches: [qualification/cgroups-metrics-gazelle-tests]
+permissions:
+  contents: read
+jobs:
+  test:
+    if: github.repository == 'tamird/bazel-gazelle'
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          ref: 761d7b804faacf022c6c593703d2da28e4e4c495
+          persist-credentials: false
+      - name: Run Gazelle's Bazel tests
+        run: bazelisk test --enable_bzlmod --test_output=errors //...
